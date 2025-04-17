@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "../../features/board/model/hooks";
 import { AddTask, MainWrapper, Task } from "../../styles/main";
 import { fetchAction, postAction, deleteAction } from "../../features/board/api/boardApi";
-import { Modal } from "../../shared/ui/Modal";
+import { Modal } from "../../shared/ui/modal.tsx";
 
 // Локальные статусы для колонок (только на фронте)
 const BOARDS = [

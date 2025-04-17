@@ -65,7 +65,7 @@ export const patchCompleteAction = createAsyncThunk(
 );
 
 export const deleteAction = createAsyncThunk('todos/deleteTodos', async function (id: number) {
-    const res = await fetch(`https://pet-wioa.onrender.com/todo/${id}`, {
+    await fetch(`https://pet-wioa.onrender.com/todo/${id}`, {
         method: 'DELETE',
     });
 
