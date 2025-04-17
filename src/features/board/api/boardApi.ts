@@ -20,7 +20,7 @@ export const postAction = createAsyncThunk('todos/postTodos', async function (in
         task: inp,
         complete: false,
     };
-    const res = await fetch('https://pet-wioa.onrender.com/todo', {
+    await fetch('https://pet-wioa.onrender.com/todo', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
