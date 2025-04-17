@@ -5,7 +5,14 @@ export const fetchAction = createAsyncThunk(
     'todos/fetchTodos',
     async function (inp:string, {rejectWithValue}) {
         try{
-            const res = await fetch('https://pet-wioa.onrender.com/todo')
+            const res = await fetch('https://pet-wioa.onrender.com/todo', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Access-Control-Allow-Origin': '*',
+                },
+                mode: 'cors'
+            })
             
             if(!res.ok){
                 throw new Error(`server error`)

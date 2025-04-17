@@ -14,7 +14,7 @@ const initialState:IState = {
     error: null,
 }
 
-const todoSlice = createSlice({
+const boardSlice = createSlice({
     name: 'todos',
     initialState,
     reducers: {
@@ -38,5 +38,5 @@ const todoSlice = createSlice({
         })
     },
 });
-export const {setInput, setTasks} = todoSlice.actions;
-export default todoSlice.reducer;
+export const {setInput, setTasks} = boardSlice.actions;
+export default boardSlice.reducer;
