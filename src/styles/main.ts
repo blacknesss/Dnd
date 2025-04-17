@@ -6,7 +6,7 @@ export const MainWrapper = styled.div`
     flex-grow: 1;
     column-gap: 16px;
 
-    & .left {
+    .todo {
         border-radius: 20px;
         background: rgb(245, 250, 249);
         padding: 12px;
@@ -21,7 +21,7 @@ export const MainWrapper = styled.div`
         flex-direction: column;
         row-gap: 12px;
     }
-    & .middle {
+    .inprogress {
         border-radius: 20px;
         background: rgb(250, 250, 245);
         padding: 12px;
@@ -32,7 +32,7 @@ export const MainWrapper = styled.div`
         row-gap: 12;
         flex-basis: 33%;
     }
-    & .right {
+    .done {
         border-radius: 20px;
         background: rgb(245, 247, 250);
         padding: 12px;
