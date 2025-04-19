@@ -2,13 +2,8 @@ export interface INote {
     id?: string;
     task?: string;
     complete?: boolean;
+    board?: string;
 }
 export interface IState {
-    todos: INote[] | undefined;
-    tasks: INote[] | undefined;
-    local: {
-        inp: string;
-    }
-    status: null | string;
-    error: null | unknown;
+    todos: INote[];
 }

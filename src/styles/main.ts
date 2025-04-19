@@ -5,6 +5,22 @@ export const MainWrapper = styled.div`
     justify-content: space-between;
     flex-grow: 1;
     column-gap: 16px;
+    ::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+    };
+    ::-webkit-scrollbar-track {
+        background: transparent;
+        padding: 20px;
+    };
+    ::-webkit-scrollbar-thumb {
+        background: rgb(217, 219, 215);
+        border-radius: 6px;
+        height: 50px;
+    };
+    ::-webkit-scrollbar-thumb:hover {
+        background: #555;
+    };
 
     .todo {
         border-radius: 20px;
@@ -15,6 +31,8 @@ export const MainWrapper = styled.div`
         flex-direction: column;
         row-gap: 12px;
         flex-basis: 33%;
+        max-height: 84vh;
+        overflow-y: auto;
     }
     .task-wrapper {
         display: flex;
@@ -29,8 +47,10 @@ export const MainWrapper = styled.div`
         display: flex;
         flex-direction: column;
         justify-content: space-between;
-        row-gap: 12;
+        row-gap: 12px;
         flex-basis: 33%;
+        max-height: 84vh;
+        overflow-y: auto;
     }
     .done {
         border-radius: 20px;
@@ -40,8 +60,10 @@ export const MainWrapper = styled.div`
         display: flex;
         flex-direction: column;
         justify-content: space-between;
-        row-gap: 12;
+        row-gap: 12px;
         flex-basis: 33%;
+        max-height: 84vh;
+        overflow-y: auto;
     }
 `;
 
