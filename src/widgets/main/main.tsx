@@ -6,19 +6,19 @@ import {
     postAction,
     deleteAction,
     patchBoardAction,
+    patchAction,
 } from '../../features/board/api/boardApi';
 import { Modal } from '../../shared/ui/modal.tsx';
-
-const BOARDS = [
-    { key: 'todo', label: 'Интервью' },
-    { key: 'inprogress', label: 'В работе' },
-    { key: 'done', label: 'Готово' },
-];
+import ModalChange, { ButtonRow, Input } from '../../features/board/ui/modalChange.tsx';
+import { BOARDS } from '../../shared/config/constants.ts';
 
 export default function Main() {
     const dispatch = useAppDispatch();
     const tasks = useAppSelector((state) => state.todos);
-
+    const [draggedId, setDraggedId] = useState<number | null>(null);
+    const [isActive, setIsActive] = useState<boolean>(false);
+    const [text, setText] = useState<string>('');
+    const [id, setId] = useState<number>();
     const [modal, setModal] = useState<{ open: boolean; board: string }>({
         open: false,
         board: BOARDS[0].key,
@@ -27,9 +27,6 @@ export default function Main() {
     useEffect(() => {
         dispatch(fetchAction());
     }, [dispatch]);
-
-
-    const [draggedId, setDraggedId] = useState<number | null>(null);
 
     const handleDragStart = (id: number) => setDraggedId(id);
     const handleDrop = async (board: string) => {
@@ -51,6 +48,14 @@ export default function Main() {
         await dispatch(fetchAction());
     };
 
+    const handleChangeCard = async (id: number, text: string) => {
+        if (text && text.length > 0) {
+            await dispatch(patchAction({ currentInput: text, id: id }));
+            await dispatch(fetchAction());
+            await setIsActive(false);
+            await setText('');
+        }
+    };
     return (
         <MainWrapper>
             {BOARDS.map((board) => (
@@ -63,26 +68,34 @@ export default function Main() {
                     <div className='task-wrapper'>
                         {tasks
                             .filter((t) => t.board === board.key)
-                            .map((t) => (
-                                <Task
-                                    key={t.id}
-                                    draggable
-                                    onDragStart={() => handleDragStart(Number(t.id))}
-                                    onDragEnd={() => setDraggedId(null)}
-                                >
-                                    <div>
-                                        <h2>{t.task}</h2>
-                                        <img
-                                            src='lucide_trash-2.png'
-                                            alt='#'
-                                            onClick={() => handleDelete(Number(t.id))}
-                                        />
-                                    </div>
-                                    <p className='name'>Денис Иванов</p>
-                                    <p className='loading'>{board.label}</p>
-                                    <p onClick={() => {}} className='add-author'>Добавить ответственного</p>
-                                </Task>
-                            ))}
+                            .map((t) => {
+                                return (
+                                    <Task
+                                        onClick={() => {
+                                            setIsActive(true), setId(Number(t.id));
+                                        }}
+                                        key={t.id}
+                                        draggable
+                                        onDragStart={() => handleDragStart(Number(t.id))}
+                                        onDragEnd={() => setDraggedId(null)}
+                                    >
+                                        <div>
+                                            <h2>{t.task}</h2>
+                                            <img
+                                                src='lucide_trash-2.png'
+                                                alt='#'
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    handleDelete(Number(t.id));
+                                                }}
+                                            />
+                                        </div>
+                                        <p className='name'>Денис Иванов</p>
+                                        <p className='loading'>{board.label}</p>
+                                        <p className='add-author'>Добавить ответственного</p>
+                                    </Task>
+                                );
+                            })}
                     </div>
                     <AddTask onClick={() => setModal({ open: true, board: board.key })}>
                         <img src='lucide_plus.png' alt='#' />
@@ -90,6 +103,22 @@ export default function Main() {
                     </AddTask>
                 </div>
             ))}
+            <ModalChange isActive={isActive} setIsActive={setIsActive}>
+                <Input
+                    autoFocus
+                    value={text}
+                    onChange={(e) => setText(e.target.value)}
+                    placeholder='Введите текст задачи'
+                    onKeyDown={(e) => {
+                        if (e.key === 'Enter') handleChangeCard(id!, text);
+                    }}
+                />
+                <ButtonRow>
+                    <button onClick={() => handleChangeCard(id!, text)}>Изменить</button>
+                    <button onClick={() => setIsActive(false)}>Отмена</button>
+                </ButtonRow>
+            </ModalChange>
+
             <Modal
                 isOpen={modal.open}
                 onClose={() => setModal({ ...modal, open: false })}

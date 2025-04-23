@@ -55,7 +55,7 @@ export function Modal({ isOpen, onClose, onSubmit }: ModalProps) {
           value={text}
           onChange={e => setText(e.target.value)}
           placeholder="Введите текст задачи"
-          onKeyDown={e => { if (e.key === "Enter") handleSubmit(); }}
+          onKeyDown={e => { if (e.key === "Enter") handleSubmit() }}
         />
         <ButtonRow>
           <button onClick={handleSubmit}>Добавить</button>

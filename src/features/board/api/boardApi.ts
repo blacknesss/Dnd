@@ -51,23 +51,6 @@ export const patchAction = createAsyncThunk(
     },
 );
 
-export const patchCompleteAction = createAsyncThunk(
-    'todos/patchCompleteTodos',
-    async function ({ value, id }: { value: boolean; id: number }) {
-        const res = await fetch(`http://localhost:3005/todo/${id}/complete`, {
-            method: 'PATCH',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                complete: value,
-            }),
-        });
-
-        return await res.json();
-    },
-);
-
 export const deleteAction = createAsyncThunk('todos/deleteTodos', async function (id: number) {
     await fetch(`http://localhost:3005/todo/${id}`, {
         method: 'DELETE',
