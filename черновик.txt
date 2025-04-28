@@ -1,0 +1,195 @@
+оптимизация для мейна:
+//
+import { useState, useEffect } from 'react';
+import { useAppDispatch, useAppSelector } from '../../features/board/model/hooks';
+import { AddTask, MainWrapper, Task } from '../../styles/main';
+import {
+    fetchAction,
+    postAction,
+    deleteAction,
+    patchBoardAction,
+    patchAction,
+    patchNameAction,
+} from '../../features/board/api/boardApi';
+import { Modal } from '../../shared/ui/modal.tsx';
+import ModalChange, { ButtonRow, Input } from '../../features/board/ui/modalChange.tsx';
+import { BOARDS } from '../../shared/config/constants.ts';
+import ModalPatch from '../../features/board/ui/modalName.tsx';
+
+export default function Main() {
+    const dispatch = useAppDispatch();
+    const tasks = useAppSelector((state) => state.todos);
+
+    // Состояние для модалок
+    const [modalState, setModalState] = useState<{
+        isOpen: boolean;
+        type: 'add' | 'edit' | 'assign';
+        id?: number;
+        text?: string;
+        name?: string;
+        board?: string;
+    }>({
+        isOpen: false,
+        type: 'add',
+    });
+
+    const [draggedId, setDraggedId] = useState<number | null>(null);
+
+    useEffect(() => {
+        dispatch(fetchAction());
+    }, [dispatch]);
+
+    // DnD: Перетаскивание задач
+    const handleDragStart = (id: number) => setDraggedId(id);
+    const handleDrop = async (board: string) => {
+        if (draggedId !== null) {
+            await dispatch(patchBoardAction({ id: draggedId, board }));
+            setDraggedId(null);
+            await dispatch(fetchAction());
+        }
+    };
+
+    // Универсальный обработчик для модалок
+    const handleModalSubmit = async (data: { id?: number; text?: string; name?: string }) => {
+        if (modalState.type === 'add') {
+            await dispatch(postAction({ inp: data.text!, board: modalState.board!, name: data.name }));
+        } else if (modalState.type === 'edit') {
+            await dispatch(patchAction({ currentInput: data.text!, id: modalState.id! }));
+        } else if (modalState.type === 'assign') {
+            await dispatch(patchNameAction({ id: modalState.id!, name: data.name! }));
+        }
+        setModalState({ isOpen: false, type: 'add' });
+        await dispatch(fetchAction());
+    };
+
+    // Удаление задачи
+    const handleDelete = async (id: number) => {
+        await dispatch(deleteAction(id));
+        await dispatch(fetchAction());
+    };
+
+    return (
+        <MainWrapper>
+            {BOARDS.map((board) => (
+                <div
+                    key={board.key}
+                    className={board.key}
+                    onDragOver={(e) => e.preventDefault()}
+                    onDrop={() => handleDrop(board.key)}
+                >
+                    <div className="task-wrapper">
+                        {tasks
+                            .filter((t) => t.board === board.key)
+                            .map((t) => (
+                                <Task
+                                    key={t.id}
+                                    draggable
+                                    onDragStart={() => handleDragStart(Number(t.id))}
+                                    onDragEnd={() => setDraggedId(null)}
+                                >
+                                    <div>
+                                        <h2
+                                            onClick={() =>
+                                                setModalState({
+                                                    isOpen: true,
+                                                    type: 'edit',
+                                                    id: t.id,
+                                                    text: t.task,
+                                                })
+                                            }
+                                            style={{ cursor: 'pointer' }}
+                                        >
+                                            {t.task}
+                                        </h2>
+                                        <img
+                                            src="lucide_trash-2.png"
+                                            alt="#"
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                handleDelete(Number(t.id));
+                                            }}
+                                        />
+                                    </div>
+                                    {t.name ? (
+                                        <p className="name">{t.name}</p>
+                                    ) : (
+                                        <p
+                                            className="add-author"
+                                            onClick={() =>
+                                                setModalState({
+                                                    isOpen: true,
+                                                    type: 'assign',
+                                                    id: t.id,
+                                                })
+                                            }
+                                        >
+                                            Добавить ответственного
+                                        </p>
+                                    )}
+                                    <p className="loading">{board.label}</p>
+                                </Task>
+                            ))}
+                    </div>
+                    <AddTask onClick={() => setModalState({ isOpen: true, type: 'add', board: board.key })}>
+                        <img src="lucide_plus.png" alt="#" />
+                        <p>Новая задача</p>
+                    </AddTask>
+                </div>
+            ))}
+
+            {/* Универсальная модалка */}
+            {modalState.isOpen && (
+                <ModalChange isActive={modalState.isOpen} setIsActive={() => setModalState({ isOpen: false, type: 'add' })}>
+                    {modalState.type === 'add' && (
+                        <Input
+                            autoFocus
+                            placeholder="Введите текст задачи"
+                            value={modalState.text || ''}
+                            onChange={(e) => setModalState((prev) => ({ ...prev, text: e.target.value }))}
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter') handleModalSubmit({ text: modalState.text });
+                            }}
+                        />
+                    )}
+                    {modalState.type === 'edit' && (
+                        <Input
+                            autoFocus
+                            placeholder="Изменить текст задачи"
+                            value={modalState.text || ''}
+                            onChange={(e) => setModalState((prev) => ({ ...prev, text: e.target.value }))}
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter') handleModalSubmit({ id: modalState.id, text: modalState.text });
+                            }}
+                        />
+                    )}
+                    {modalState.type === 'assign' && (
+                        <Input
+                            autoFocus
+                            placeholder="Введите имя"
+                            value={modalState.name || ''}
+                            onChange={(e) => setModalState((prev) => ({ ...prev, name: e.target.value }))}
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter') handleModalSubmit({ id: modalState.id, name: modalState.name });
+                            }}
+                        />
+                    )}
+                    <ButtonRow>
+                        <button
+                            onClick={() =>
+                                handleModalSubmit({
+                                    id: modalState.id,
+                                    text: modalState.text,
+                                    name: modalState.name,
+                                })
+                            }
+                        >
+                            {modalState.type === 'add' ? 'Добавить' : 'Изменить'}
+                        </button>
+                        <button onClick={() => setModalState({ isOpen: false, type: 'add' })}>Отмена</button>
+                    </ButtonRow>
+                </ModalChange>
+            )}
+        </MainWrapper>
+    );
+}
+\\

@@ -65,6 +65,37 @@ export const MainWrapper = styled.div`
         max-height: 84vh;
         overflow-y: auto;
     }
+
+    @media (max-width: 768px) {
+        flex-direction: column;
+        row-gap: 16px;
+
+        .todo,
+        .inprogress,
+        .done {
+            flex-basis: 100%;
+        }
+    }
+
+    @media (max-width: 480px) {
+        column-gap: 8px;
+
+        .todo,
+        .inprogress,
+        .done {
+            padding: 8px;
+        }
+    }
+
+    @media (max-width: 320px) {
+        column-gap: 4px;
+
+        .todo,
+        .inprogress,
+        .done {
+            padding: 6px;
+        }
+    }
 `;
 
 export const Task = styled.div`
@@ -88,6 +119,7 @@ export const Task = styled.div`
         }
         & h2 {
             display: flex;
+            word-break: break-word;
         }
         & h2:before {
             content: url(done.png);
@@ -120,10 +152,31 @@ export const Task = styled.div`
     & .add-author {
         display: flex;
         cursor: pointer;
+        word-break: break-word;
     }
     & .add-author:before {
         content: url(lucide_user.png);
         padding: 0px 5px 0 0;
+    }
+
+    @media (max-width: 480px) {
+        padding: 12px;
+        row-gap: 12px;
+
+        & div {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+    }
+
+    @media (max-width: 320px) {
+        padding: 8px;
+        row-gap: 8px;
+
+        & div {
+            flex-direction: column;
+            align-items: flex-start;
+        }
     }
 `;
 
@@ -141,4 +194,14 @@ export const AddTask = styled.div`
     font-family: Inter;
     font-size: 16px;
     font-weight: 600;
+
+    @media (max-width: 480px) {
+        padding: 8px 16px;
+        font-size: 14px;
+    }
+
+    @media (max-width: 320px) {
+        padding: 6px 12px;
+        font-size: 12px;
+    }
 `;
