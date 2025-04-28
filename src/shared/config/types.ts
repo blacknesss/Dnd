@@ -3,7 +3,9 @@ export interface INote {
     task?: string;
     complete?: boolean;
     board?: string;
+    name?: string;
 }
 export interface IState {
     todos: INote[];
+    done: number;
 }

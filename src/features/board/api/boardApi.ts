@@ -2,13 +2,12 @@ import { INote } from '../../../shared/config/types';
 import { createAsyncThunk } from '@reduxjs/toolkit';
 
 export const fetchAction = createAsyncThunk('todos/fetchTodos', async function () {
-    const res = await fetch('http://localhost:3005/todo', {
+    const res = await fetch('https://pet-wioa.onrender.com/todo', {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
             'Access-Control-Allow-Origin': '*',
-        },
-        mode: 'cors',
+        }
     });
     let data: INote[] = await res.json();
 
@@ -17,13 +16,14 @@ export const fetchAction = createAsyncThunk('todos/fetchTodos', async function (
 
 export const postAction = createAsyncThunk(
     'todos/postTodos',
-    async function ({ inp, board }: { inp: string; board: string }) {
+    async function ({ inp, board, name }: { inp: string; board: string, name:string | undefined }) {
         const newTask: INote = {
             task: inp,
             complete: false,
             board: board,
+            name: name,
         };
-        await fetch('http://localhost:3005/todo', {
+        await fetch('https://pet-wioa.onrender.com/todo', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -39,7 +39,7 @@ export const patchAction = createAsyncThunk(
         const newTask: INote = {
             task: currentInput,
         };
-        const res = await fetch(`http://localhost:3005/todo/${id}/task`, {
+        const res = await fetch(`https://pet-wioa.onrender.com/todo/${id}/task`, {
             method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json',
@@ -52,7 +52,7 @@ export const patchAction = createAsyncThunk(
 );
 
 export const deleteAction = createAsyncThunk('todos/deleteTodos', async function (id: number) {
-    await fetch(`http://localhost:3005/todo/${id}`, {
+    await fetch(`https://pet-wioa.onrender.com/todo/${id}`, {
         method: 'DELETE',
     });
 
@@ -62,7 +62,7 @@ export const deleteAction = createAsyncThunk('todos/deleteTodos', async function
 export const patchBoardAction = createAsyncThunk(
     'todos/patchBoardTodos',
     async function ({ id, board }: { id: number; board: string }) {
-        const res = await fetch(`http://localhost:3005/todo/${id}/board`, {
+        const res = await fetch(`https://pet-wioa.onrender.com/todo/${id}/board`, {
             method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json',
@@ -75,3 +75,20 @@ export const patchBoardAction = createAsyncThunk(
         return await res.json();
     },
 );
+
+export const patchNameAction = createAsyncThunk(
+    'todos/patchNameTodos',
+    async function ({id, name}: {id:number; name: string}) {
+        const res = await fetch(`https://pet-wioa.onrender.com/todo/${id}/name`,{
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                name: name,
+            }),
+        })
+
+        return await res.json();
+    }
+)

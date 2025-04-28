@@ -47,15 +47,15 @@ export const ButtonRow = styled.div`
 `;
 
 interface IAgrs {
-    isActive: boolean;
-    setIsActive: (arg: boolean) => void;
+    isPatch: boolean;
+    setIsPatch: (arg: boolean) => void;
     children: React.ReactNode;
 }
 
-export default function ModalChange({ setIsActive, isActive, children }: IAgrs) {
+export default function ModalPatch({ setIsPatch, isPatch, children }: IAgrs) {
     return (
-        isActive && (
-            <ModalOverlay onClick={() => setIsActive(false)}>
+        isPatch && (
+            <ModalOverlay onClick={() => setIsPatch(false)}>
                 <ModalContent onClick={(e) => e.stopPropagation()}>{children}</ModalContent>
             </ModalOverlay>
         )
